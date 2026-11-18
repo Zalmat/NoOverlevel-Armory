@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WoW Forever — Сравнение 6 персонажей</title>
+<style>
+  :root {
+    --bg:#0d0f13; --card:#161920; --panel:#101318; --border:#272c38;
+    --text:#e5e7eb; --muted:#9ca3af; --accent:#3b82f6;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg);color:var(--text);margin:0;padding:18px;padding-bottom:120px}
+  .wrap{max-width:1560px;margin:0 auto}
+  .topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
+    gap:12px;margin-bottom:14px}
+  h1{font-size:19px;margin:0}
+  .settings-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .setting-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:10px;background:var(--card);padding:14px;border-radius:10px;
+    border:1px solid var(--border);margin-bottom:18px}
+  .field{display:flex;flex-direction:column;gap:4px}
+  label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .input-row{display:flex;gap:4px}
+  input,select{background:var(--panel);border:1px solid var(--border);color:#fff;
+    padding:6px 9px;border-radius:6px;font-size:13px;width:100%}
+  .settings-bar select{width:auto;padding:5px 8px;font-size:12px}
+  .btn-mini{background:#222733;border:1px solid var(--border);color:#cbd5e1;
+    border-radius:6px;padding:0 9px;cursor:pointer;font-size:12px;flex-shrink:0}
+  .btn-mini:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:center}
+  button.primary{background:#2563eb;color:#fff;border:none;padding:8px 16px;
+    border-radius:6px;font-weight:600;cursor:pointer;font-size:13px}
+  button.primary:hover{background:#1d4ed8}
+  button.secondary{background:#232834;color:#e5e7eb;border:1px solid var(--border);
+    padding:8px 14px;border-radius:6px;font-weight:500;cursor:pointer;font-size:13px}
+  button.secondary:hover{background:#2f3646}
+  button.danger{background:#3f1d24;border-color:#6b2532;color:#fca5a5}
+  button.danger:hover{background:#58242e}
+  .global-status{font-size:12px;color:var(--muted);margin-left:auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--border);
+    border-top:3px solid var(--class,#60a5fa);border-radius:10px;padding:12px;
+    display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,border-color .15s}
+  .card.pinned-char{border-color:#f59e0b;box-shadow:0 0 0 1px #f59e0b,0 8px 24px rgba(245,158,11,.15)}
+  .hero{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .hero-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .avatar{width:46px;height:46px;border-radius:8px;background:var(--panel);
+    border:1px solid var(--border);object-fit:cover;flex-shrink:0}
+  .meta{font-size:11px;color:var(--muted)}
+  .cls{color:var(--class,#fff);font-weight:600}
+  .char-link{font-size:16px;font-weight:700;color:#fff;text-decoration:none}
+  .char-link:hover{text-decoration:underline}
+  .spec-tag{display:inline-block;font-size:11px;background:var(--panel);
+    border:1px solid var(--border);padding:1px 6px;border-radius:4px;margin-top:2px;color:#d1d5db}
+  .hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+  .card-btns{display:flex;gap:4px}
+  .pin-btn{background:var(--panel);border:1px solid var(--border);color:var(--muted);
+    font-size:11px;padding:3px 7px;border-radius:5px;cursor:pointer}
+  .pin-btn:hover{color:#fff;border-color:#64748b}
+  .pin-btn.active{background:#78350f;border-color:#f59e0b;color:#fef3c7;font-weight:600}
+  .gs-box{display:flex;gap:8px;background:var(--panel);padding:4px 8px;
+    border-radius:6px;border:1px solid var(--border);font-size:11px;color:var(--muted)}
+  .gs-box b{color:#fbbf24}
+  .gear-wrap{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px}
+  .paperdoll{display:grid;grid-template-columns:38px 1fr 38px;gap:8px;align-items:start}
+  .col{display:flex;flex-direction:column;gap:4px}
+  .bottom-slots{display:flex;justify-content:center;gap:6px;margin-top:7px;
+    padding-top:7px;border-top:1px solid var(--border)}
+  .slot{width:38px;height:38px;border-radius:6px;background:#090b0f;
+    border:2px solid #2e3442;position:relative;display:block;overflow:hidden;cursor:pointer}
+  .slot:hover{transform:scale(1.06);z-index:2}
+  .slot img{width:100%;height:100%;object-fit:cover;display:block}
+  .slot .ilvl{position:absolute;bottom:0;right:0;background:rgba(0,0,0,.85);
+    color:#fbbf24;font-size:9px;font-weight:700;padding:0 3px;line-height:1.2}
+  .q-0{border-color:#9d9d9d}.q-1{border-color:#fff}.q-2{border-color:#1eff00}
+  .q-3{border-color:#0070dd}.q-4{border-color:#a335ee}.q-5{border-color:#ff8000}
+  .center-stats{display:flex;flex-direction:column;gap:7px}
+  .bars{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  .bar{padding:5px 7px;border-radius:5px;font-size:11px;display:flex;
+    justify-content:space-between;font-weight:600}
+  .bar.hp{background:rgba(22,163,74,.16);border:1px solid rgba(34,197,94,.35);color:#4ade80}
+  .bar.pw{background:rgba(37,99,235,.16);border:1px solid rgba(59,130,246,.35);color:#60a5fa}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;font-size:11.5px}
+  .stat-row{display:flex;justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,.04);padding:2px 0}
+  .stat-row span{color:var(--muted)}.stat-row b{color:#f3f4f6}
+  .card-foot{display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280;
+    border-top:1px solid var(--border);padding-top:6px}
+  .status-box{font-size:12.5px;color:var(--muted);padding:24px 12px;text-align:center}
+  #tooltip-dock{position:fixed;bottom:16px;right:16px;z-index:9999;display:none;
+    gap:10px;align-items:flex-end;max-width:calc(100vw - 32px)}
+  #tooltip-dock.left-pos{right:auto;left:16px}
+  #tooltip-dock.visible{display:flex}
+  .tt-card{width:345px;max-height:78vh;overflow-y:auto;background:#0b0d12;
+    border:1px solid #3b4254;border-radius:10px;padding:11px 13px;
+    box-shadow:0 14px 38px rgba(0,0,0,.85);font-size:12.5px;line-height:1.42;color:#e5e7eb}
+  .tt-card.locked{border-color:#3b82f6;box-shadow:0 0 0 1px #3b82f6,0 14px 38px rgba(0,0,0,.9)}
+  .tt-card.ref-card{border-color:#f59e0b}
+  .tt-head{display:flex;justify-content:space-between;align-items:center;
+    font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid #1f2430}
+  .tt-controls{display:flex;gap:4px;align-items:center}
+  .tt-lock-btn{background:#1a1f2b;border:1px solid #2e3546;color:#cbd5e1;
+    border-radius:4px;padding:2px 6px;font-size:11px;cursor:pointer}
+  .tt-lock-btn.on{background:#1d4ed8;border-color:#60a5fa;color:#fff}
+  .tt-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+  .tt-tab{background:#151922;border:1px solid #2a303f;color:#9ca3af;
+    font-size:10.5px;padding:3px 7px;border-radius:4px;cursor:pointer}
+  .tt-tab:hover{color:#fff;border-color:#4b5563}
+  .tt-tab.active{background:#2563eb;border-color:#3b82f6;color:#fff;font-weight:600}
+  .wh-body table{width:100%;border-collapse:collapse}
+  .wh-body td,.wh-body th{padding:0;vertical-align:top}
+  .wh-body .q{color:#ffd100}.wh-body .q0{color:#9d9d9d}.wh-body .q1{color:#fff}
+  .wh-body .q2{color:#1eff00}.wh-body .q3{color:#0070dd}.wh-body .q4{color:#a335ee}
+  .wh-body .q5{color:#ff8000}
+  .wh-body a{color:#1eff00;text-decoration:none;pointer-events:none}
+  .wh-body .moneygold::after{content:"з ";color:#ffd100}
+  .wh-body .moneysilver::after{content:"с ";color:#c7c7cf}
+  .wh-body .moneycopper::after{content:"м";color:#eda55f}
+  .diff-box{margin-top:8px;padding-top:7px;border-top:1px dashed #2e3546;font-size:11.5px}
+  .diff-title{font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .diff-pos{color:#4ade80;font-weight:600}.diff-neg{color:#f87171;font-weight:600}
+  .tt-progress{font-size:11px;color:#93c5fd;background:rgba(59,130,246,.12);
+    border:1px solid rgba(59,130,246,.3);padding:5px 8px;border-radius:5px;margin-bottom:6px}
+  .tt-foot{margin-top:8px;padding-top:5px;border-top:1px solid #1f2430;
+    display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <h1>WoW Forever — Сравнение 6 персонажей (Вещи и Статы)</h1>
+    <div class="settings-bar">
+      <div class="setting-item">
+        <span>Вкладка описания по умолчанию:</span>
+        <select id="default-source">
+          <option value="forever_en">Forever (EN)</option>
+          <option value="forever_ru">Forever (RU)</option>
+          <option value="classic_ru">Classic (RU)</option>
+          <option value="classic_en">Classic (EN)</option>
+          <option value="tbc_ru">TBC (RU)</option>
+          <option value="wotlk_ru">WotLK (RU)</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <span>Позиция окна:</span>
+        <select id="dock-pos">
+          <option value="right">Справа снизу</option>
+          <option value="left">Слева снизу</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="field">
+      <label>Сервер</label>
+      <select id="realm">
+        <option value="forever/eu/pvp">EU PvP</option>
+        <option value="forever/eu/pve">EU PvE</option>
+        <option value="forever/us/pvp">US PvP</option>
+      </select>
+    </div>
+    <!-- Убрали list="char-history", он подключается динамически -->
+    <div class="field"><label>Персонаж 1</label><div class="input-row"><input class="char-input" placeholder="Имя-Фамилия"><button class="btn-mini" onclick="loadSingle(0,false)">▶</button></div></div>
+    <div class="field"><label>Персонаж 2</label><div class="input-row"><input class="char-input" placeholder="Имя-Фамилия"><button class="btn-mini" onclick="loadSingle(1,false)">▶</button></div></div>
+    <div class="field"><label>Персонаж 3</label><div class="input-row"><input class="char-input" placeholder="Имя-Фамилия"><button class="btn-mini" onclick="loadSingle(2,false)">▶</button></div></div>
+    <div class="field"><label>Персонаж 4</label><div class="input-row"><input class="char-input" placeholder="Имя-Фамилия"><button class="btn-mini" onclick="loadSingle(3,false)">▶</button></div></div>
+    <div class="field"><label>Персонаж 5</label><div class="input-row"><input class="char-input" placeholder="Имя-Фамилия"><button class="btn-mini" onclick="loadSingle(4,false)">▶</button></div></div>
+    <div class="field"><label>Персонаж 6</label><div class="input-row"><input class="char-input" placeholder="Имя-Фамилия"><button class="btn-mini" onclick="loadSingle(5,false)">▶</button></div></div>
+    
+    <datalist id="char-history"></datalist>
+    
+    <div class="actions">
+      <button class="primary" onclick="loadAll(false)">Загрузить всех (с кэшем)</button>
+      <button class="secondary" onclick="loadAll(true)">Обновить всех с сервера</button>
+      <button class="secondary danger" onclick="clearAllCache()">Очистить кэш</button>
+      <span id="global-status" class="global-status">Инициализация…</span>
+    </div>
+  </div>
+
+  <div id="grid" class="grid"></div>
+</div>
+
+<div id="tooltip-dock">
+  <div id="tt-ref" class="tt-card ref-card" style="display:none;"></div>
+  <div id="tt-main" class="tt-card"></div>
+</div>
+
+<script>
+"use strict";
+
+const CLASS_NAMES = {1:"Воин",2:"Паладин",3:"Охотник",4:"Разбойник",5:"Жрец",
+  6:"Рыцарь смерти",7:"Шаман",8:"Маг",9:"Чернокнижник",11:"Друид"};
+const CLASS_COLORS = {1:"#C79C6E",2:"#F58CBA",3:"#ABD473",4:"#FFF569",5:"#FFFFFF",
+  6:"#C41F3B",7:"#0070DE",8:"#69CCF0",9:"#9482C9",11:"#FF7D0A"};
+const SLOT_NAMES = {HEAD:"Голова",NECK:"Шея",SHOULDER:"Плечи",BACK:"Спина",
+  CHEST:"Грудь",SHIRT:"Рубашка",TABARD:"Гербовая накидка",WRIST:"Запястья",
+  HANDS:"Кисти рук",WAIST:"Пояс",LEGS:"Ноги",FEET:"Ступни",
+  FINGER_1:"Палец 1",FINGER_2:"Палец 2",TRINKET_1:"Аксессуар 1",TRINKET_2:"Аксессуар 2",
+  MAIN_HAND:"Правая рука",OFF_HAND:"Левая рука",RANGED:"Дальний бой"};
+const LEFT_SLOTS=["HEAD","NECK","SHOULDER","BACK","CHEST","SHIRT","TABARD","WRIST"];
+const RIGHT_SLOTS=["HANDS","WAIST","LEGS","FEET","FINGER_1","FINGER_2","TRINKET_1","TRINKET_2"];
+const BOTTOM_SLOTS=["MAIN_HAND","OFF_HAND","RANGED"];
+const SOURCES=[
+  {key:"forever_en",label:"Forever EN",path:"forever"},
+  {key:"forever_ru",label:"Forever RU",path:"forever/ru"},
+  {key:"classic_ru",label:"Classic RU",path:"classic/ru"},
+  {key:"classic_en",label:"Classic EN",path:"classic"},
+  {key:"tbc_ru",label:"TBC RU",path:"tbc/ru"},
+  {key:"wotlk_ru",label:"WotLK RU",path:"wotlk/ru"}
+];
+
+const CACHE_PREFIX = "wowf_shared_cache_v3_"; // обновили версию кэша
+const MAX_LS_BYTES = 4 * 1024 * 1024;
+const memCharCache = new Map();
+const memItemCache = new Map();
+const inflight = new Map();
+const loadedChars = {};
+let pinnedCharIdx = null;
+let isTooltipLocked = false;
+let activeHoverContext = null;
+const activeTabByCard = {main:null, ref:null};
+
+const inputs = [...document.querySelectorAll('.char-input')];
+const defaultSourceSel = document.getElementById('default-source');
+const dockPosSel = document.getElementById('dock-pos');
+const tooltipDock = document.getElementById('tooltip-dock');
+
+// ---------- localStorage helpers ----------
+function lsSize() {
+  let total = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    total += k.length + (localStorage.getItem(k)?.length || 0);
+  }
+  return total * 2;
+}
+
+function saveWithLRU(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch {
+    const entries = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k?.startsWith(CACHE_PREFIX + "item_")) continue;
+      try {
+        const obj = JSON.parse(localStorage.getItem(k));
+        entries.push({k, ts: obj?.cachedAt || 0});
+      } catch { entries.push({k, ts: 0}); }
+    }
+    entries.sort((a, b) => a.ts - b.ts);
+    for (const {k} of entries) {
+      localStorage.removeItem(k);
+      if (lsSize() < MAX_LS_BYTES * 0.7) break;
+    }
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+// ---------- Инициализация и конфиг ----------
+async function initCharacters() {
+  const st = document.getElementById("global-status");
+  st.textContent = "Загрузка конфига…";
+
+  let serverDefaults = [];
+  let serverDefaultSource = "forever_ru";
+  let serverDockPos = "";
+
+  try {
+    const res = await fetch('/api/config');
+    if (res.ok) {
+      const cfg = await res.json();
+      serverDefaults = cfg.characters || [];
+      serverDefaultSource = cfg.defaultSource || "forever_en";
+      serverDockPos = cfg.dockPos || "";
+    }
+  } catch (e) {
+    console.warn("Не удалось загрузить конфиг, используем пустые значения", e);
+  }
+  
+
+  // Установка дефолтного источника
+  // Приоритет 1: конфиг сервера (если там задано)
+  // Приоритет 2: localStorage (если на сервере пусто)
+  // Приоритет 3: forever_en
+  const savedSource = localStorage.getItem(CACHE_PREFIX + "default_source");
+  if (serverDefaultSource && serverDefaultSource.trim() !== "") {
+    defaultSourceSel.value = serverDefaultSource;
+  } else if (savedSource) {
+    defaultSourceSel.value = savedSource;
+  } else {
+    defaultSourceSel.value = "forever_en";
+  }
+
+  // Установка позиции дока
+  // Позиция дока: конфиг сервера -> localStorage -> по умолчанию (right)
+  const savedPos = localStorage.getItem(CACHE_PREFIX + "dock_pos");
+  if (serverDockPos && serverDockPos.trim() !== "") {
+    dockPosSel.value = serverDockPos;
+  } else if (savedPos) {
+    dockPosSel.value = savedPos;
+  } else {
+    dockPosSel.value = "right";
+  }
+  tooltipDock.classList.toggle("left-pos", dockPosSel.value === "left");
+
+  // === ГЛАВНЫЙ ФИКС ===
+  // Приоритет 1: Конфиг сервера (если там что-то есть)
+  // Приоритет 2: localStorage (если на сервере пусто)
+  const savedNames = JSON.parse(localStorage.getItem(CACHE_PREFIX + "inputs") || "null");
+  
+  inputs.forEach((inp, i) => {
+    // Если в конфиге сервера есть имя для этого поля — берем его
+    if (serverDefaults[i] && serverDefaults[i].trim() !== "") {
+      inp.value = serverDefaults[i];
+    } 
+    // Иначе, если в localStorage есть сохраненное имя — берем его
+    else if (savedNames && savedNames[i] && savedNames[i].trim() !== "") {
+      inp.value = savedNames[i];
+    } 
+    // Иначе оставляем пустым
+    else {
+      inp.value = "";
+    }
+  });
+
+  updateHistoryDatalist();
+
+  // Подключаем datalist динамически
+  inputs.forEach(inp => {
+    inp.addEventListener("focus", () => {
+      if (!inp.getAttribute("list")) inp.setAttribute("list", "char-history");
+    });
+  });
+
+  st.textContent = "Готово (Shift или клик по вещи — закрепить описание)";
+  loadAll(false);
+}
+
+function updateHistoryDatalist() {
+  const hist = JSON.parse(localStorage.getItem(CACHE_PREFIX + "history") || "[]");
+  document.getElementById("char-history").innerHTML = hist.map(n => `<option value="${n}">`).join("");
+}
+function addToHistory(name) {
+  if (!name) return;
+  const hist = JSON.parse(localStorage.getItem(CACHE_PREFIX + "history") || "[]");
+  if (!hist.includes(name)) {
+    hist.unshift(name);
+    saveWithLRU(CACHE_PREFIX + "history", JSON.stringify(hist.slice(0, 30)));
+    updateHistoryDatalist();
+  }
+}
+
+defaultSourceSel.onchange = () => {
+  localStorage.setItem(CACHE_PREFIX + "default_source", defaultSourceSel.value);
+  activeTabByCard.main = null;
+  activeTabByCard.ref = null;
+  if (activeHoverContext) showSlotComparison(activeHoverContext.charIdx, activeHoverContext.slotName);
+};
+dockPosSel.onchange = () => {
+  localStorage.setItem(CACHE_PREFIX + "dock_pos", dockPosSel.value);
+  tooltipDock.classList.toggle("left-pos", dockPosSel.value === "left");
+};
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Shift" && tooltipDock.classList.contains("visible") && !isTooltipLocked) {
+    toggleTooltipLock(true);
+  }
+  if (e.key === "Escape" && isTooltipLocked) {
+    toggleTooltipLock(false);
+    tooltipDock.classList.remove("visible");
+  }
+});
+
+function toggleTooltipLock(forceState) {
+  isTooltipLocked = typeof forceState === "boolean" ? forceState : !isTooltipLocked;
+  document.getElementById("tt-main").classList.toggle("locked", isTooltipLocked);
+  if (activeHoverContext) showSlotComparison(activeHoverContext.charIdx, activeHoverContext.slotName);
+}
+
+// ---------- fetch ----------
+async function smartFetch(targetUrl) {
+  if (location.protocol.startsWith("http")) {
+    const isApi = targetUrl.startsWith("https://armorywowforever.com/api/");
+    const localUrl = isApi
+      ? targetUrl.replace("https://armorywowforever.com", "")
+      : `/wh-proxy/${encodeURIComponent(targetUrl)}`;
+    const res = await fetch(localUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  }
+  const res = await fetch(targetUrl);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.text();
+}
+
+function normalizeSlug(raw) {
+  return raw.trim().split(/[\s-]+/).filter(Boolean)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join("-");
+}
+
+async function fetchCharacter(realm, rawName, forceRefresh) {
+  const slug = normalizeSlug(rawName);
+  const cacheKey = `${CACHE_PREFIX}char_${realm}_${slug}`;
+
+  if (!forceRefresh) {
+    if (memCharCache.has(cacheKey)) return {...memCharCache.get(cacheKey), fromCache: true};
+    const ls = localStorage.getItem(cacheKey);
+    if (ls) {
+      try {
+        const parsed = JSON.parse(ls);
+        memCharCache.set(cacheKey, parsed);
+        return {...parsed, fromCache: true};
+      } catch {}
+    }
+  }
+
+  const url = `https://armorywowforever.com/api/character/${realm}/${encodeURIComponent(slug)}${forceRefresh ? "?refresh=1" : ""}`;
+  const rawSlug = rawName.trim().replace(/\s+/g, "-");
+  const urls = [url];
+  if (rawSlug !== slug) {
+    urls.push(url.replace(encodeURIComponent(slug), encodeURIComponent(rawSlug)));
+  }
+
+  let lastErr = null;
+  for (const u of urls) {
+    try {
+      const text = await smartFetch(u);
+      const data = JSON.parse(text);
+      if (data && !data.error && data.name) {
+        const wrapped = {data, savedAt: Date.now()};
+        memCharCache.set(cacheKey, wrapped);
+        saveWithLRU(cacheKey, JSON.stringify(wrapped));
+        return {...wrapped, fromCache: false};
+      }
+      lastErr = new Error(data?.message || "Персонаж не найден");
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error("Ошибка загрузки");
+}
+
+function isValidTooltipHtml(html) {
+  if (!html || typeof html !== "string") return false;
+  const lower = html.toLowerCase();
+  if (lower.includes("не найдено") || lower.includes("not found")) return false;
+  return html.includes("<table") || html.includes("q") || html.includes("ilvl") || html.length > 140;
+}
+
+async function fetchAllItemSources(item, onProgress) {
+  const whParams = [
+    item.gems?.length && `gems=${item.gems.map(g => g.id).join(":")}`,
+    item.enchantId && `ench=${item.enchantId}`,
+    item.setPieces?.length && `pcs=${item.setPieces.join(":")}`
+  ].filter(Boolean).join("&");
+
+  const cacheKey = `${CACHE_PREFIX}item_${item.id}_${whParams}`;
+  if (memItemCache.has(cacheKey)) return memItemCache.get(cacheKey);
+  const ls = localStorage.getItem(cacheKey);
+  if (ls) {
+    try {
+      const parsed = JSON.parse(ls);
+      if (parsed && Object.keys(parsed.sources || {}).length > 0) {
+        memItemCache.set(cacheKey, parsed);
+        return parsed;
+      }
+    } catch {}
+  }
+
+  const pref = defaultSourceSel.value;
+  const ordered = [
+    ...SOURCES.filter(s => s.key === pref),
+    ...SOURCES.filter(s => s.key !== pref)
+  ];
+  const foundSources = {};
+
+  for (const src of ordered) {
+    if (onProgress) onProgress(`Поиск в ${src.label}…`);
+    const url = `https://nether.wowhead.com/${src.path}/tooltip/item/${item.id}${whParams ? "?" + whParams : ""}`;
+    try {
+      const text = await smartFetch(url);
+      const json = JSON.parse(text);
+      if (json && isValidTooltipHtml(json.tooltip)) {
+        foundSources[src.key] = {
+          key: src.key, label: src.label,
+          name: json.name || item.name,
+          html: json.tooltip
+        };
+      }
+    } catch {}
+  }
+
+  if (Object.keys(foundSources).length === 0 && item.name) {
+    if (onProgress) onProgress(`Поиск по имени "${item.name}"…`);
+    try {
+      const searchUrl = `https://www.wowhead.com/forever/search/suggestions-template?q=${encodeURIComponent(item.name)}`;
+      const sText = await smartFetch(searchUrl);
+      const sJson = JSON.parse(sText);
+      const match = (sJson?.results || []).find(r => r.type === 3 && r.name?.toLowerCase() === item.name.toLowerCase());
+      if (match?.id) {
+        const fbUrl = `https://nether.wowhead.com/forever/tooltip/item/${match.id}`;
+        const fbText = await smartFetch(fbUrl);
+        const fbJson = JSON.parse(fbText);
+        if (fbJson && isValidTooltipHtml(fbJson.tooltip)) {
+          foundSources["forever_search"] = {
+            key: "forever_search",
+            label: `Forever (по имени #${match.id})`,
+            name: fbJson.name || item.name,
+            html: fbJson.tooltip
+          };
+        }
+      }
+    } catch {}
+  }
+
+  if (Object.keys(foundSources).length === 0) {
+    const slotRu = SLOT_NAMES[item.slot] || item.slot || "";
+    foundSources["server_local"] = {
+      key: "server_local", label: "Сервер WoW Forever",
+      name: item.name || `Предмет #${item.id}`,
+      html: `
+        <div class="q${item.quality ?? 1}" style="font-weight:700;font-size:14px;">${item.name || "Неизвестный предмет"}</div>
+        ${item.ilvl ? `<div style="color:#ffd100;">Уровень предмета: ${item.ilvl}</div>` : ""}
+        ${slotRu ? `<div>${slotRu}</div>` : ""}
+        ${item.enchantId ? `<div style="color:#1eff00;">Зачарование ID: ${item.enchantId}</div>` : ""}
+        ${item.gems?.length ? `<div style="color:#60a5fa;">Самоцветы: ${item.gems.map(g => g.name || "#" + g.id).join(", ")}</div>` : ""}
+        <div style="color:#9ca3af;margin-top:6px;">Подробное описание отсутствует в открытых базах (ID: ${item.id})</div>
+      `
+    };
+  }
+
+  const result = {sources: foundSources, cachedAt: Date.now()};
+  memItemCache.set(cacheKey, result);
+  saveWithLRU(cacheKey, JSON.stringify(result));
+  return result;
+}
+
+function extractNumericStats(html) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  const text = tmp.innerText || tmp.textContent || "";
+  const stats = {};
+  const patterns = [
+    [/(\d+)\s*(?:ед\.\s*)?брон/i, "Броня"],
+    [/([\d.]+)\s*Armor/i, "Броня"],
+    [/\+(\d+)\s*(?:к\s*)?сил[аеуы]/i, "Сила"],
+    [/\+(\d+)\s*Strength/i, "Сила"],
+    [/\+(\d+)\s*(?:к\s*)?ловкост/i, "Ловкость"],
+    [/\+(\d+)\s*Agility/i, "Ловкость"],
+    [/\+(\d+)\s*(?:к\s*)?выносливост/i, "Выносливость"],
+    [/\+(\d+)\s*Stamina/i, "Выносливость"],
+    [/\+(\d+)\s*(?:к\s*)?интеллект/i, "Интеллект"],
+    [/\+(\d+)\s*Intellect/i, "Интеллект"],
+    [/\+(\d+)\s*(?:к\s*)?дух/i, "Дух"],
+    [/\+(\d+)\s*Spirit/i, "Дух"],
+    [/силу\s*заклинаний[^\d]*(\d+)/i, "Сила заклинаний"],
+    [/spell\s*power[^\d]*(\d+)/i, "Сила заклинаний"],
+    [/силу\s*атаки[^\d]*(\d+)/i, "Сила атаки"],
+    [/attack\s*power[^\d]*(\d+)/i, "Сила атаки"]
+  ];
+  for (const [re, label] of patterns) {
+    const m = text.match(re);
+    if (m) stats[label] = (stats[label] || 0) + parseFloat(m[1]);
+  }
+  return stats;
+}
+
+function buildDiffHtml(targetHtml, refHtml) {
+  const s1 = extractNumericStats(targetHtml);
+  const s2 = extractNumericStats(refHtml);
+  const keys = new Set([...Object.keys(s1), ...Object.keys(s2)]);
+  const lines = [];
+  for (const k of keys) {
+    const diff = (s1[k] || 0) - (s2[k] || 0);
+    if (diff !== 0) {
+      const cls = diff > 0 ? "diff-pos" : "diff-neg";
+      const sign = diff > 0 ? "+" : "";
+      lines.push(`<div class="${cls}">${sign}${diff} ${k}</div>`);
+    }
+  }
+  if (!lines.length) return "";
+  return `<div class="diff-box"><div class="diff-title">Разница относительно закреплённого:</div>${lines.join("")}</div>`;
+}
+
+function renderTooltipCard(containerEl, role, charObj, item, itemData, compareRefHtml = null) {
+  const prevScroll = containerEl.scrollTop;
+  const keys = Object.keys(itemData.sources);
+  let selectedKey = activeTabByCard[role];
+  if (!selectedKey || !itemData.sources[selectedKey]) {
+    selectedKey = keys.includes(defaultSourceSel.value) ? defaultSourceSel.value : keys[0];
+    activeTabByCard[role] = selectedKey;
+  }
+  const activeSrc = itemData.sources[selectedKey];
+  const slotRu = SLOT_NAMES[item.slot] || item.slot;
+
+  const tabsHtml = keys.length > 1 ? `
+    <div class="tt-tabs">
+      ${keys.map(k => `
+        <button class="tt-tab ${k === selectedKey ? "active" : ""}"
+                onclick="switchCardTab('${role}','${k}')">${itemData.sources[k].label}</button>
+      `).join("")}
+    </div>` : "";
+
+  const lockBtnHtml = role === "main" ? `
+    <button class="tt-lock-btn ${isTooltipLocked ? "on" : ""}"
+            title="Закрепить окно (или Shift)"
+            onclick="toggleTooltipLock()">${isTooltipLocked ? "🔒 Закреплено" : "🔓 Shift"}</button>
+  ` : "";
+
+  const diffHtml = (role === "main" && compareRefHtml)
+    ? buildDiffHtml(activeSrc.html, compareRefHtml) : "";
+
+  containerEl.innerHTML = `
+    <div class="tt-head">
+      <span>${charObj.name} · ${slotRu}</span>
+      <div class="tt-controls">${lockBtnHtml}</div>
+    </div>
+    ${tabsHtml}
+    <div class="wh-body">${activeSrc.html}</div>
+    ${diffHtml}
+    <div class="tt-foot">
+      <span>ID: ${item.id}</span>
+      <span>Источник: ${activeSrc.label}</span>
+    </div>
+  `;
+  containerEl.scrollTop = prevScroll;
+}
+
+let lastRenderedData = {main:null, ref:null};
+
+window.switchCardTab = function(role, key) {
+  activeTabByCard[role] = key;
+  if (lastRenderedData[role]) {
+    const {el, charObj, item, itemData} = lastRenderedData[role];
+    const refActiveKey = activeTabByCard.ref;
+    const refHtml = (role === "main" && lastRenderedData.ref)
+      ? lastRenderedData.ref.itemData.sources[refActiveKey]?.html : null;
+    renderTooltipCard(el, role, charObj, item, itemData, refHtml);
+  }
+};
+
+async function showSlotComparison(charIdx, slotName) {
+  const charObj = loadedChars[charIdx];
+  if (!charObj) return;
+  const item = (charObj.items || []).find(it => it.slot === slotName);
+  if (!item) return;
+
+  activeHoverContext = {charIdx, slotName};
+  tooltipDock.classList.add("visible");
+
+  const mainEl = document.getElementById("tt-main");
+  const refEl = document.getElementById("tt-ref");
+
+  const hasRef = pinnedCharIdx !== null && pinnedCharIdx !== charIdx && loadedChars[pinnedCharIdx];
+  let refItem = null;
+  if (hasRef) refItem = (loadedChars[pinnedCharIdx].items || []).find(it => it.slot === slotName);
+
+  if (hasRef && refItem) {
+    refEl.style.display = "block";
+    refEl.innerHTML = `<div class="tt-progress">Загрузка слота ${loadedChars[pinnedCharIdx].name}…</div>`;
+  } else {
+    refEl.style.display = "none";
+    lastRenderedData.ref = null;
+  }
+  mainEl.innerHTML = `<div class="tt-progress" id="tt-prog">Поиск описания для ${item.name || "#" + item.id}…</div>`;
+
+  const [mainData, refData] = await Promise.all([
+    fetchAllItemSources(item, (msg) => {
+      const p = document.getElementById("tt-prog");
+      if (p) p.textContent = msg;
+    }),
+    (hasRef && refItem) ? fetchAllItemSources(refItem) : Promise.resolve(null)
+  ]);
+
+  if (!isTooltipLocked && (!activeHoverContext
+      || activeHoverContext.charIdx !== charIdx
+      || activeHoverContext.slotName !== slotName)) return;
+
+  let refHtmlForDiff = null;
+  if (refData && refItem) {
+    lastRenderedData.ref = {el:refEl, charObj:loadedChars[pinnedCharIdx], item:refItem, itemData:refData};
+    renderTooltipCard(refEl, "ref", loadedChars[pinnedCharIdx], refItem, refData);
+    const rKey = activeTabByCard.ref || Object.keys(refData.sources)[0];
+    refHtmlForDiff = refData.sources[rKey]?.html || null;
+  }
+
+  lastRenderedData.main = {el:mainEl, charObj, item, itemData:mainData};
+  renderTooltipCard(mainEl, "main", charObj, item, mainData, refHtmlForDiff);
+}
+
+function onSlotEnter(charIdx, slotName) {
+  if (isTooltipLocked) return;
+  showSlotComparison(charIdx, slotName);
+}
+function onSlotLeave() {
+  if (isTooltipLocked) return;
+  activeHoverContext = null;
+  tooltipDock.classList.remove("visible");
+}
+
+function togglePinChar(idx) {
+  pinnedCharIdx = (pinnedCharIdx === idx) ? null : idx;
+  document.querySelectorAll(".card").forEach((el) => {
+    const cardIdx = Number(el.dataset.idx);
+    el.classList.toggle("pinned-char", cardIdx === pinnedCharIdx);
+    const btn = el.querySelector(".pin-btn");
+    if (btn) {
+      btn.classList.toggle("active", cardIdx === pinnedCharIdx);
+      btn.textContent = (cardIdx === pinnedCharIdx) ? "📌 Закреплён" : "📌 Сравнить";
+    }
+  });
+}
+
+function calcAvgIlvl(c) {
+  const direct = c.itemLevel ?? c.ilvl ?? c.avgItemLevel;
+  if (direct) return direct;
+  const valid = (c.items || []).filter(i => i.ilvl != null && i.slot !== "SHIRT" && i.slot !== "TABARD");
+  if (!valid.length) return "—";
+  return Math.round(valid.reduce((acc, i) => acc + Number(i.ilvl), 0) / valid.length);
+}
+
+function renderSlotHtml(charIdx, items, slotName) {
+  const item = (items || []).find(it => it.slot === slotName);
+  const slotRu = SLOT_NAMES[slotName] || slotName;
+  if (!item) return `<div class="slot" title="${slotRu} (пусто)"></div>`;
+  const showIlvl = item.ilvl && slotName !== "SHIRT" && slotName !== "TABARD";
+  return `
+    <div class="slot q-${item.quality ?? 1}"
+         onmouseenter="onSlotEnter(${charIdx},'${slotName}')"
+         onmouseleave="onSlotLeave()"
+         onclick="toggleTooltipLock(true); showSlotComparison(${charIdx},'${slotName}')">
+      ${item.icon ? `<img src="${item.icon}" alt="${item.name || ""}" loading="lazy">` : ""}
+      ${showIlvl ? `<span class="ilvl">${item.ilvl}</span>` : ""}
+    </div>`;
+}
+
+function statRow(label, val, suffix = "") {
+  if (val === null || val === undefined) return "";
+  const f = typeof val === "number" ? val.toLocaleString("ru-RU") : val;
+  return `<div class="stat-row"><span>${label}</span><b>${f}${suffix}</b></div>`;
+}
+
+function renderStatsHtml(c) {
+  const s = c.stats;
+  if (!s) return `<div class="status-box">Статы недоступны</div>`;
+  const isCaster = [5, 8, 9].includes(c.classId) || (s.spellPower ?? 0) > (s.attackPower ?? 0);
+  const isRanged = c.classId === 3;
+
+  const left = [
+    statRow("Сила", s.strength), statRow("Ловкость", s.agility),
+    statRow("Выносливость", s.stamina), statRow("Интеллект", s.intellect),
+    statRow("Дух", s.spirit), statRow("Броня", s.armor), statRow("Защита", s.defense)
+  ].join("");
+
+  const right = isCaster ? [
+    statRow("Сила закл.", s.spellPower),
+    statRow("Лечение", s.healing > s.spellPower ? s.healing : null),
+    statRow("Крит закл.", s.spellCrit, "%"),
+    statRow("Скорость закл.", s.spellHaste, "%"),
+    statRow("Воспр. маны", s.manaRegen),
+    statRow("Проник. закл.", s.spellPenetration)
+  ].join("") : [
+    statRow("Сила атаки", s.attackPower),
+    statRow("Крит", isRanged ? s.rangedCrit : s.meleeCrit, "%"),
+    statRow("Скорость", s.meleeHaste, "%"),
+    statRow("Уклонение", s.dodge, "%"),
+    statRow("Парирование", s.parry, "%"),
+    statRow("Блок", s.block, "%")
+  ].join("");
+
+  return `
+    <div class="center-stats">
+      <div class="bars">
+        <div class="bar hp"><span>HP</span><span>${(s.health ?? 0).toLocaleString("ru-RU")}</span></div>
+        <div class="bar pw"><span>${s.powerType || "Ресурс"}</span><span>${(s.power ?? 0).toLocaleString("ru-RU")}</span></div>
+      </div>
+      <div class="stat-grid"><div>${left}</div><div>${right}</div></div>
+    </div>`;
+}
+
+function getSpecName(c) {
+  const group = (c.talents || []).find(g => g.active) ?? c.talents?.[0];
+  if (!group?.trees?.length) return "";
+  const main = [...group.trees].sort((a, b) => b.points - a.points)[0];
+  return `${main.name} (${group.trees.map(t => t.points).join("/")})`;
+}
+
+function renderCharacterCard(idx, c, realm, fromCache, savedAt) {
+  const color = CLASS_COLORS[c.classId] || "#60a5fa";
+  const clsName = c.class || CLASS_NAMES[c.classId] || "Класс";
+  const spec = getSpecName(c);
+  const slug = normalizeSlug(c.name);
+  const pageUrl = `https://armorywowforever.com/c/${realm}/${encodeURIComponent(slug)}`;
+  const isPinned = pinnedCharIdx === idx;
+  const timeStr = new Date(savedAt).toLocaleTimeString("ru-RU", {hour:"2-digit", minute:"2-digit"});
+
+  return `
+    <div class="hero">
+      <div class="hero-left">
+        <img class="avatar" src="${c.avatar || ""}" alt="">
+        <div>
+          <div class="meta">Ур. ${c.level} · ${c.race || ""} · <span class="cls" style="color:${color}">${clsName}</span></div>
+          <a class="char-link" href="${pageUrl}" target="_blank" rel="noopener">${c.name} ↗</a>
+          ${spec ? `<div><span class="spec-tag">${spec}</span></div>` : ""}
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="card-btns">
+          <button class="pin-btn ${isPinned ? "active" : ""}" onclick="togglePinChar(${idx})">${isPinned ? "📌 Закреплён" : "📌 Сравнить"}</button>
+          <button class="pin-btn" title="Обновить" onclick="loadSingle(${idx}, true)">↻</button>
+        </div>
+        <div class="gs-box">
+          <span>GS: <b>${c.gearscore ?? "—"}</b></span>
+          <span>iLvl: <b>${calcAvgIlvl(c)}</b></span>
+        </div>
+      </div>
+    </div>
+    <div class="gear-wrap">
+      <div class="paperdoll">
+        <div class="col">${LEFT_SLOTS.map(s => renderSlotHtml(idx, c.items, s)).join("")}</div>
+        ${renderStatsHtml(c)}
+        <div class="col">${RIGHT_SLOTS.map(s => renderSlotHtml(idx, c.items, s)).join("")}</div>
+      </div>
+      <div class="bottom-slots">${BOTTOM_SLOTS.map(s => renderSlotHtml(idx, c.items, s)).join("")}</div>
+    </div>
+    <div class="card-foot">
+      <span>${fromCache ? "● Из кэша" : "● Загружено с сервера"} (${timeStr})</span>
+      <span>Клик по вещи — закрепить окно</span>
+    </div>`;
+}
+
+function ensureCardSlot(idx) {
+  const grid = document.getElementById("grid");
+  let card = grid.querySelector(`.card[data-idx="${idx}"]`);
+  if (!card) {
+    card = document.createElement("div");
+    card.className = "card";
+    card.dataset.idx = idx;
+    grid.appendChild(card);
+  }
+  return card;
+}
+
+async function loadSingle(idx, forceRefresh = false) {
+  const rawName = inputs[idx].value.trim();
+  localStorage.setItem(CACHE_PREFIX + "inputs", JSON.stringify(inputs.map(i => i.value)));
+  const grid = document.getElementById("grid");
+
+  if (!rawName) {
+    grid.querySelector(`.card[data-idx="${idx}"]`)?.remove();
+    delete loadedChars[idx];
+    return false;
+  }
+
+  const realm = document.getElementById("realm").value;
+  const dedupeKey = `${realm}::${normalizeSlug(rawName)}::${forceRefresh ? 1 : 0}`;
+  if (inflight.has(dedupeKey)) {
+    try { await inflight.get(dedupeKey); } catch {}
+  }
+
+  const card = ensureCardSlot(idx);
+  card.innerHTML = `<div class="status-box">Загрузка <b>${rawName}</b>…</div>`;
+
+  const task = (async () => {
+    const res = await fetchCharacter(realm, rawName, forceRefresh);
+    loadedChars[idx] = res.data;
+    const color = CLASS_COLORS[res.data.classId] || "#60a5fa";
+    card.style.setProperty("--class", color);
+    card.innerHTML = renderCharacterCard(idx, res.data, realm, res.fromCache, res.savedAt);
+    addToHistory(res.data.name);
+    return !res.fromCache;
+  })();
+
+  inflight.set(dedupeKey, task);
+  try {
+    return await task;
+  } catch (err) {
+    card.innerHTML = `<div class="status-box">❌ <b>${rawName}</b>: ${err.message}</div>`;
+    return true;
+  } finally {
+    inflight.delete(dedupeKey);
+  }
+}
+
+async function loadAll(forceRefresh = false) {
+  const st = document.getElementById("global-status");
+  st.textContent = "Загрузка персонажей…";
+
+  const LIMIT = 2;
+  const queue = inputs.map((_, i) => i);
+  const workers = Array.from({length: Math.min(LIMIT, queue.length)}, async () => {
+    while (queue.length) {
+      const i = queue.shift();
+      await loadSingle(i, forceRefresh);
+    }
+  });
+  await Promise.all(workers);
+
+  st.textContent = "Загрузка завершена (Shift или клик по вещи — закрепить описание)";
+}
+
+async function clearAllCache() {
+  memCharCache.clear();
+  memItemCache.clear();
+  inflight.clear();
+  const toRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(CACHE_PREFIX) && !k.endsWith("inputs") && !k.endsWith("history")) {
+      toRemove.push(k);
+    }
+  }
+  toRemove.forEach(k => localStorage.removeItem(k));
+  if (location.protocol.startsWith("http")) {
+    try { await fetch("/clear-cache"); } catch {}
+  }
+  document.getElementById("global-status").textContent = "Кэш очищен!";
+}
+
+// Запуск
+initCharacters();
+</script>
+</body>
+</html>
