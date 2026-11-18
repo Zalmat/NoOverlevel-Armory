@@ -2,7 +2,9 @@
 
 [![Python](https://shields.io)](https://python.org)
 [![Version](https://shields.io)](https://github.com)
-[![License: MIT](https://shields.io)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+
 
 **[English](#english) | [Русский](#русский)**
 
